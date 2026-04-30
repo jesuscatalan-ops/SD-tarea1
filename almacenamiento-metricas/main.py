@@ -70,6 +70,7 @@ def limpiar_metricas():
     redis_client.flushdb()
     return {"status": "métricas y caché eliminados"}
 
+#contabilizar evictions
 @app.get("/metricas/evictions")
 def obtener_evictions():
     info = redis_client.info("stats")

@@ -5,7 +5,7 @@ import os
 
 app = FastAPI()
 
-# ── Zonas definidas en el enunciado ──────────────────────────────────────────
+# Zonas definidas en el enunciado
 ZONAS = {
     "Z1": {"lat_min": -33.445, "lat_max": -33.420, "lon_min": -70.640, "lon_max": -70.600},
     "Z2": {"lat_min": -33.420, "lat_max": -33.390, "lon_min": -70.600, "lon_max": -70.550},
@@ -14,7 +14,7 @@ ZONAS = {
     "Z5": {"lat_min": -33.470, "lat_max": -33.430, "lon_min": -70.810, "lon_max": -70.760},
 }
 
-# ── Área de cada zona en km² ──────────────────────────────────────────────────
+#Área de cada zona en kilometro cuadradoo
 def calcular_area_km2(zona):
     lat_diff = abs(zona["lat_max"] - zona["lat_min"]) * 111
     lon_diff = abs(zona["lon_max"] - zona["lon_min"]) * 111
@@ -22,17 +22,17 @@ def calcular_area_km2(zona):
 
 ZONAS_AREA_KM2 = {z: calcular_area_km2(ZONAS[z]) for z in ZONAS}
 
-# ── Carga del dataset ─────────────────────────────────────────────────────────
+# Carga del dataset 
 DATA = {}
 
 def cargar_datos():
     ruta = "/app/datos/dataset.csv"
     if not os.path.exists(ruta):
-        print("⚠️  dataset.csv no encontrado, generando datos sintéticos...")
+        print("dataset.csv no encontrado, generando datos sintéticos...")
         generar_datos_sinteticos()
         return
 
-    print("📂 Cargando dataset real...")
+    print("Cargando dataset real...")
     df = pd.read_csv(ruta)
     for zona_id, zona in ZONAS.items():
         filtro = (
@@ -43,7 +43,7 @@ def cargar_datos():
         print(f"  {zona_id}: {len(DATA[zona_id])} edificios cargados")
 
 def generar_datos_sinteticos():
-    print("🔧 Generando datos sintéticos por zona...")
+    print("Generando datos sintéticos por zona...")
     for zona_id, zona in ZONAS.items():
         n = np.random.randint(500, 2000)
         DATA[zona_id] = [
@@ -59,7 +59,7 @@ def generar_datos_sinteticos():
 
 cargar_datos()
 
-# ── Consultas Q1–Q5 ───────────────────────────────────────────────────────────
+# Consultas Q1–Q5 
 @app.get("/q1")
 def q1_count(zona_id: str, confidence_min: float = 0.0):
     registros = DATA.get(zona_id, [])

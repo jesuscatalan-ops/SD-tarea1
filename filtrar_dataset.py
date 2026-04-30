@@ -15,4 +15,4 @@ filtro = (
 df_filtrado = df[filtro]
 print(f"Edificios encontrados: {len(df_filtrado)}")
 df_filtrado.to_csv("datos/dataset.csv", index=False)
-print("✅ dataset.csv guardado")
+print("dataset.csv guardado")

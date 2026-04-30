@@ -5,7 +5,7 @@ import random
 import asyncio
 import os
 
-# ── Configuración ─────────────────────────────────────────────────────────────
+# Configuración 
 CACHE_URL = "http://cache:8002"
 ZONAS = ["Z1", "Z2", "Z3", "Z4", "Z5"]
 CONSULTAS = ["q1", "q2", "q3", "q4", "q5"]
@@ -13,17 +13,17 @@ TOTAL_CONSULTAS = 1000 #Se dejó en 1000 para que se pueda probar rapidamente, p
 # ... se utilizaron 15.000 y 50.000 consultas! (descrito en el informe)
 INTERVALO = 0.01 
 
-# ── Distribución Zipf ─────────────────────────────────────────────────────────
+# Distribución Zipf
 def get_zona_zipf():
     pesos = [1 / (i + 1) for i in range(len(ZONAS))]
     pesos = [p / sum(pesos) for p in pesos]
     return np.random.choice(ZONAS, p=pesos)
 
-# ── Distribución Uniforme ─────────────────────────────────────────────────────
+# Distribución Uniforme
 def get_zona_uniforme():
     return random.choice(ZONAS)
 
-# ── Generar parámetros por tipo de consulta ───────────────────────────────────
+# Generar parámetros por tipo de consulta
 MODO = os.getenv("MODO", "aleatorio")
 
 def generar_params(tipo: str, zona: str):
@@ -46,9 +46,9 @@ def generar_params(tipo: str, zona: str):
     elif tipo == "q5":
         return {"zona_id": zona, "bins": random.choice(bins_values)}
 
-# ── Ejecutar consultas ────────────────────────────────────────────────────────
+# Ejecutar consultas
 async def ejecutar_consultas(distribucion: str):
-    print(f"\n🚀 Iniciando {TOTAL_CONSULTAS} consultas con distribución {distribucion}...")
+    print(f"\n Iniciando {TOTAL_CONSULTAS} consultas con distribución {distribucion}...")
     
     async with httpx.AsyncClient(timeout=30) as client:
         for i in range(TOTAL_CONSULTAS):
@@ -68,7 +68,7 @@ async def ejecutar_consultas(distribucion: str):
     print(f"\n Consultas completadas con distribución {distribucion}")
 
 async def main():
-    print("⏳ Esperando que los servicios estén listos...")
+    print("Esperando que los servicios estén listos...")
     await asyncio.sleep(10)
 
     # Limpiar métricas antes de empezar

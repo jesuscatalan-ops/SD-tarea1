@@ -7,15 +7,15 @@ import os
 
 app = FastAPI()
 
-# ── Conexión a Redis ──────────────────────────────────────────────────────────
+#  Conexión a Redis 
 redis_client = redis.Redis(host="redis", port=6379, decode_responses=True)
 
-# ── URL del generador de respuestas ──────────────────────────────────────────
+# URL del generador de respuestas 
 GENERADOR_URL = "http://generador-respuestas:8001"
 
 import os
 
-# ── TTL por tipo de consulta (segundos) ───────────────────────────────────────
+# TTL por tipo de consulta ( en segundos) 
 TTL_VALOR = int(os.getenv("TTL", "300"))
 TTL_POR_CONSULTA = {
     "q1": TTL_VALOR,
@@ -25,7 +25,7 @@ TTL_POR_CONSULTA = {
     "q5": TTL_VALOR,
 }
 
-# ── Función principal de caché ───────────────────────────────────────────────
+# Función principal de caché 
 async def procesar_consulta(tipo: str, params: dict):
     # Generar cache key
     params_str = ":".join(f"{k}={v}" for k, v in sorted(params.items()))
@@ -42,7 +42,7 @@ async def procesar_consulta(tipo: str, params: dict):
         registrar_metrica("hit", tipo, latencia)
         return {"fuente": "cache", "cache_key": cache_key, "resultado": json.loads(resultado_cache)}
 
-    # Cache MISS — consultar al generador de respuestas
+    # Cache MISS: consultar al generador de respuestas
     async with httpx.AsyncClient() as client:
         response = await client.get(f"{GENERADOR_URL}/{tipo}", params=params)
         resultado = response.json()
@@ -56,7 +56,7 @@ async def procesar_consulta(tipo: str, params: dict):
 
     return {"fuente": "generador", "cache_key": cache_key, "resultado": resultado}
 
-# ── Registro de métricas ──────────────────────────────────────────────────────
+# Registro de métricas 
 def registrar_metrica(tipo_evento: str, consulta: str, latencia: float):
     evento = {
         "tipo": tipo_evento,
@@ -66,7 +66,7 @@ def registrar_metrica(tipo_evento: str, consulta: str, latencia: float):
     }
     redis_client.lpush("metricas", json.dumps(evento))
 
-# ── Endpoints ─────────────────────────────────────────────────────────────────
+# Endpoints
 @app.get("/q1")
 async def q1(zona_id: str, confidence_min: float = 0.0):
     return await procesar_consulta("q1", {"zona_id": zona_id, "confidence_min": confidence_min})
