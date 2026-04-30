@@ -1,0 +1,37 @@
+services:
+  redis:
+    image: redis:7
+    ports:
+      - "6379:6379"
+    command: redis-server --maxmemory 200mb --maxmemory-policy allkeys-lru
+
+  generador-respuestas:
+    build: ./generador-respuestas
+    ports:
+      - "8001:8001"
+    volumes:
+      - ./datos:/app/datos
+    depends_on:
+      - redis
+
+  cache:
+    build: ./cache
+    ports:
+      - "8002:8002"
+    environment:
+      - TTL=300
+    depends_on:
+      - redis
+      - generador-respuestas
+
+  generador-trafico:
+    build: ./generador-trafico
+    environment:
+      - MODO=aleatorio
+
+  almacenamiento-metricas:
+    build: ./almacenamiento-metricas
+    ports:
+      - "8003:8003"
+    depends_on:
+      - redis
